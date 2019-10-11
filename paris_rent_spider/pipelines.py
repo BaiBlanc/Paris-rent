@@ -14,7 +14,7 @@ import scrapy
 class DemoPipeline(object):
 
     def __init__(self):
-        self.file = open('spider_demo/data/data.json', 'w')
+        self.file = open('paris_rent_spider/data/data.json', 'w')
 
     def open_spider(self, spider):
         print("spider start")

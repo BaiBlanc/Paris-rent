@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for spider_demo project
+# Scrapy settings for paris_rent_spider project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,14 +9,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'spider_demo'
+BOT_NAME = 'paris_rent_spider'
 
-SPIDER_MODULES = ['spider_demo.spiders']
-NEWSPIDER_MODULE = 'spider_demo.spiders'
+SPIDER_MODULES = ['paris_rent_spider.spiders']
+NEWSPIDER_MODULE = 'paris_rent_spider.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = 'spider_demo (+http://www.yourdomain.com)'
+# USER_AGENT = 'paris_rent_spider (+http://www.yourdomain.com)'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
 
 # Obey robots.txt rules
@@ -48,13 +48,13 @@ ROBOTSTXT_OBEY = False
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'spider_demo.middlewares.SpiderDemoSpiderMiddleware': 543,
+#    'paris_rent_spider.middlewares.SpiderDemoSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'spider_demo.middlewares.SpiderDemoDownloaderMiddleware': 543,
+#    'paris_rent_spider.middlewares.SpiderDemoDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -66,7 +66,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'spider_demo.pipelines.DemoPipeline': 100,
+   'paris_rent_spider.pipelines.DemoPipeline': 100,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

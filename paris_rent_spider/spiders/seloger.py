@@ -2,7 +2,7 @@
 import re
 import scrapy
 
-from spider_demo.items import SpiderDemoItem
+from paris_rent_spider.items import SpiderDemoItem
 
 class SelogerSpider(scrapy.Spider):
 

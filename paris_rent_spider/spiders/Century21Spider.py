@@ -4,7 +4,7 @@ import urllib
 from scrapy import log
 import re
 
-from spider_demo.items import SpiderDemoItem
+from paris_rent_spider.items import SpiderDemoItem
 
 
 class Century21Spider(scrapy.Spider):
