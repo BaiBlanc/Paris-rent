@@ -199,7 +199,7 @@ y_train = train.price
 lwlr.fit(x_train,y_train)
 
 
-# Try to predict a 20 m2 studio in the 16th arrondisment (borough)
+# Try to predict a 20 m2 studio in the 16th arrondissment (borough)
 lwlr.predict(np.array([20,75016,0]).reshape(1,3))
 # Result: 858.9711624335032
 # 859 euro/month Sigh...
