@@ -7,6 +7,9 @@ Original file is located at
     https://colab.research.google.com/drive/1TqGKwThML9B1lSVMgq8Tbs4FQOA8ls60
 """
 
+"""
+Authentification for files in google Drive
+
 !apt-get install -y -qq software-properties-common python-software-properties module-init-tools
 !add-apt-repository -y ppa:alessandro-strada/ppa 2>&1 > /dev/null
 !apt-get update -qq 2>&1 > /dev/null
@@ -22,75 +25,71 @@ vcode = getpass.getpass()
 
 !mkdir -p drive
 !google-drive-ocamlfuse drive
+"""
 
 # Commented out IPython magic to ensure Python compatibility.
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
 import seaborn as sns
 # %matplotlib inline
 
 os.chdir("drive/colab-notebooks/paris-renting")
 
+# Read the paris renting dataset
 data = pd.read_json("seloger.json", orient = "records")
 
+# Encoding categorical features
 def type_encoder(x):
   return {'Studio': 0,"Appartement F3":1, "Appartement F4":2}[x]
 train = data.copy()
 train['type'] = train['type'].apply(type_encoder)
 
+# EDA
 train.head().append(train.tail())
-
 train.nunique()
-
+train['type'].value_counts()
+train.describe()
 from pylab import rcParams
 rcParams['figure.figsize'] = 14, 10
-
 sns.countplot(x='type',hue = 'code_post', data=data)
-
-train['type'].value_counts()
-
-train.describe()
-
 train["price"].plot(kind='hist',bins=11,xlim=(300,1400))
 
+# Z-score data for K-means
 data_zs = (train-train.mean())/train.std()
-
 data_zs.describe()
 
 from sklearn.cluster import KMeans
-model = KMeans(n_clusters = 2, max_iter = 25) #分为k类
-#model = KMeans(n_clusters = k, n_jobs = 4, max_iter = iteration) #分为k类，并发数4
-model.fit(data_zs) #开始聚类
+model = KMeans(n_clusters = 2, max_iter = 25) # 2 clusters
+model.fit(data_zs) #Star clustering
 
-#简单打印结果
-r1 = pd.Series(model.labels_).value_counts() #统计各个类别的数目
-r2 = pd.DataFrame(model.cluster_centers_) #找出聚类中心
-r = pd.concat([r2, r1], axis = 1) #横向连接（0是纵向），得到聚类中心对应的类别下的数目
+# Print the results
+r1 = pd.Series(model.labels_).value_counts() #Number of data in each cluster
+r2 = pd.DataFrame(model.cluster_centers_) #Find the center
+r = pd.concat([r2, r1], axis = 1)
 print(r)
-r.columns = list(data.columns) + [u'nb_cluster'] #重命名表头
+r.columns = list(data.columns) + [u'nb_cluster'] #Rename the table
 print(r)
 
-#详细输出原始数据及其类别
-r = pd.concat([data, pd.Series(model.labels_, index = data.index)], axis = 1)  #详细输出每个样本对应的类别
-r.columns = list(data.columns) + [u'cluster'] #重命名表头
+# Add the information od cluster into origin dataset
+r = pd.concat([data, pd.Series(model.labels_, index = data.index)], axis = 1)
+r.columns = list(data.columns) + [u'cluster']
 
 ### Silhouette Coefficient
-
 r['cluster'].value_counts()
 
+# Reduction of dimension with t-SNE
 from sklearn.manifold import TSNE
 tsne = TSNE(random_state = 64)
-tsne.fit_transform(data_zs) #进行数据降维,并返回结果
-tsne = pd.DataFrame(tsne.embedding_, index = data_zs.index) #转换数据格式
+tsne.fit_transform(data_zs)
+tsne = pd.DataFrame(tsne.embedding_, index = data_zs.index) #Change the data tyoe
 
 import matplotlib.pyplot as plt
 
-
-#不同类别用不同颜色和样式绘图
-d = tsne[r[u'cluster'] == 0]     #找出聚类类别为0的数据对应的降维结果
+# Visualize the dataset with reduced dimensionlity
+# Choose different color for different cluster (4 color predefined)
+d = tsne[r[u'cluster'] == 0]
 plt.plot(d[0], d[1], 'r.')
 d = tsne[r[u'cluster'] == 1]
 plt.plot(d[0], d[1], 'go')
@@ -102,58 +101,8 @@ plt.show()
 
 data.groupby('type').count()
 
-from sklearn.manifold import TSNE
-from sklearn.datasets import load_iris
-from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
-
-class data():
-    def __init__(self, data, target):
-        self.data = data
-        self.target = target
-
-# 加载数据集
-iris = load_iris()
-
-data_zs.describe()
-
-from sklearn.manifold import TSNE
-tsne = TSNE(random_state =66)
-tsne.fit_transform(data_zs)
-tsne = pd.DataFrame(tsne.embedding_, index = data_zs.index)
-
-plt.figure(figsize = (14,8))
-
-plt.scatter(tsne[0],tsne[1])
-
-tsne_zs = (tsne-tsne.mean())/tsne.std()
-
-from sklearn.cluster import KMeans
-model = KMeans(n_clusters = 2, max_iter = 20 ) #k clusters
-model.fit(tsne_zs)
-
-r1 = pd.Series(model.labels_).value_counts() #统计各个类别的数目
-r2 = pd.DataFrame(model.cluster_centers_) #找出聚类中心
-r = pd.concat([r2, r1], axis = 1) #横向连接（0是纵向），得到聚类中心对应的类别下的数目
-print(r)
-r.columns = list([1,2]) + [u'nb_cluster'] #重命名表头
-print(r)
-r = pd.concat([tsne, pd.Series(model.labels_, index = tsne.index)], axis = 1)  #详细输出每个样本对应的类别
-r.columns = list(tsne.columns)+[u'Cluster']
-
-plt.figure(figsize = (14,8))
-d = tsne[r[u'Cluster'] == 0]
-plt.plot(d[0], d[1], 'r.')
-d = tsne[r[u'Cluster'] == 1]
-plt.plot(d[0], d[1], 'go')
-d = tsne[r[u'Cluster'] == 2]
-plt.plot(d[0], d[1], 'b*')
-d = tsne[r[u'Cluster'] == 3]
-plt.plot(d[0], d[1], '*', color = 'black')
-plt.show()
-
-data_clustered = pd.concat([r.Cluster,data],axis =1)
-
+# EDA with clustered data
+data_clustered = pd.concat([r.cluster,data],axis =1)
 data_clustered.head()
 
 sns.countplot(x = "Cluster", hue = "type", data = data_clustered)
@@ -168,22 +117,36 @@ prizes
 
 sizes
 
+# Prediction of price with LWLR which is realised manually
 import math
 from sklearn.linear_model import LinearRegression
 class LWLR(object):
   """
   Locally weighted Linear Regression
+  LWLR is a lazy learning model,
+  which means the calculation will be done only when receive the test data
   """
     def __init__(self, k):
         self.k = k
     
     def fit(self,X,y):
+        """
+        Only stock the training set without any calculation
+        :param X: Training-set
+        :param y: Labels
+        :return: self
+        """
         self.X = X
         self.y = y
         return self
         
         
     def predict(self,X):
+        """
+        Call the mecthod @predict_single() to predict singly
+        :param X: The training set
+        :return: The nparray of results
+        """
         result = []
         for i in range(pd.DataFrame(X).shape[0]):
             prediction = self.predict_single(pd.DataFrame(X).iloc[i])
@@ -215,6 +178,11 @@ class LWLR(object):
         return result
       
     def predict_single(self,example):
+        """
+        Calculate the weights considering the distance with each training data
+        :param example: A single data for prediction
+        :return: The single result of prediction
+        """
         example = np.array(example)
         weights = np.square(self.X-example)
         weights = np.sum(weights,axis=1)
@@ -226,13 +194,14 @@ class LWLR(object):
 
 lwlr = LWLR(1)
 
+x_train = train.loc[:,["size","code_post","type"]]
+y_train = train.price
 lwlr.fit(x_train,y_train)
 
-x_train = train.loc[:,["size","code_post","type"]]
 
-y_train = train.price
-
+# Try to predict a 20 m2 studio in the 16th arrondisment (borough)
 lwlr.predict(np.array([20,75016,0]).reshape(1,3))
+# Result: 858.9711624335032
+# 859 euro/month Sigh...
 
-train[train['size']==0]
 
