@@ -5,3 +5,4 @@
 #### Framework specialized for web crawling
 
 ## EDA (Explotary Data Analysis)
+![Count tyoes of renting in each borough](https://github.com/BaiBlanc/Paris-rent/blob/master/img-folder/type_counts.png)
