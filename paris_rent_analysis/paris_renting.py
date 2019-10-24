@@ -56,6 +56,10 @@ rcParams['figure.figsize'] = 14, 10
 sns.countplot(x='type',hue = 'code_post', data=data)
 train["price"].plot(kind='hist',bins=11,xlim=(300,1400))
 
+#Some Cleaning and Engineering
+train=train[train['size']>5] # Drop the outliers
+train["price_per_squaremeter"] = train["price"]/train["size"]
+
 # Z-score data for K-means
 data_zs = (train-train.mean())/train.std()
 data_zs.describe()
